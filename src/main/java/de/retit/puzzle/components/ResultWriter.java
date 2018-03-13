@@ -16,7 +16,7 @@ import de.retit.puzzle.entity.Measurement;
 public class ResultWriter {
 
 	private static final Logger LOGGER = Logger.getLogger(ResultWriter.class.getName());
-	
+
 	private String outputDirectory;
 	private Map<String, List<Measurement>> transactionMap;
 
@@ -33,7 +33,7 @@ public class ResultWriter {
 				content += measurement.getTime().getTime();
 				content += ",";
 				content += measurement.getValue().longValue();
-				if(i < entry.getValue().size() - 1 ) {
+				if (i < entry.getValue().size() - 1) {
 					content += "\n";
 				}
 			}
@@ -43,7 +43,7 @@ public class ResultWriter {
 				Files.write(outputFile, content.getBytes(), StandardOpenOption.CREATE,
 						StandardOpenOption.TRUNCATE_EXISTING);
 			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "Error writing CSV file for "+entry.getKey(), e);
+				LOGGER.log(Level.SEVERE, "Error writing CSV file for " + entry.getKey(), e);
 			}
 		}
 	}

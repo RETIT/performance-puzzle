@@ -29,7 +29,7 @@ public class CsvReader {
 			int character;
 			while ((character = fileReader.read()) > 0) {
 				if ((character == '\r' || character == '\n')) {
-					if(!line.equals("")) {
+					if (!line.equals("")) {
 						lines.add(line);
 						line = "";
 					}

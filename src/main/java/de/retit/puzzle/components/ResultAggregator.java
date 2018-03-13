@@ -14,20 +14,20 @@ import de.retit.puzzle.entity.Measurement;
 public class ResultAggregator extends Thread {
 
 	private static final String LINE_REGEX = "([0-9]*),([0-9]*),([a-zA-Z]*)";
-	
+
 	private List<String> csv;
 	private static Map<String, List<Measurement>> result = Collections.synchronizedMap(new HashMap<>());
-	
+
 	public ResultAggregator(List<String> csv) {
 		this.csv = csv;
 	}
-	
+
 	public static Map<String, List<Measurement>> getResult() {
 		return result;
 	}
 
 	public void run() {
-		synchronized(result) {
+		synchronized (result) {
 			for (String line : csv) {
 				if (line.matches(LINE_REGEX)) {
 					// Match line to pattern to get required fields
@@ -36,14 +36,14 @@ public class ResultAggregator extends Thread {
 					String timestamp = matcher.group(1);
 					String time = matcher.group(2);
 					String transaction = matcher.group(3);
-	
+
 					// Build Measurement
 					Date date = new Date(Long.parseLong(timestamp));
 					Double timeDouble = Double.valueOf(time);
 					Measurement measurement = new Measurement(date, timeDouble);
-	
+
 					// Add to map
-					synchronized(result) {
+					synchronized (result) {
 						List<Measurement> measurementList = new ArrayList<>(1);
 						if (result.containsKey(transaction)) {
 							measurementList = result.get(transaction);
