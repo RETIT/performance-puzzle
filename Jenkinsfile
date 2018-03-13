@@ -23,7 +23,7 @@ pipeline {
             steps {
 				script {
 					sh "cp -Rf ./pre-test/* ."
-					timeout(time: 60, unit: 'SECONDS') {
+					timeout(time: 120, unit: 'SECONDS') {
 						withMaven(maven: 'Maven', mavenSettingsConfig: "e13f1bd0-0910-4c30-b54b-dd526e63e5d6") {
 							sh "mvn clean verify"
 						}
@@ -35,7 +35,7 @@ pipeline {
             steps {
 				script {
 					sh "cp -Rf ./test/* ."
-					timeout(time: 300, unit: 'SECONDS') {
+					timeout(time: 360, unit: 'SECONDS') {
 						withMaven(maven: 'Maven', mavenSettingsConfig: "e13f1bd0-0910-4c30-b54b-dd526e63e5d6") {
 							sh "mvn clean verify"
 						}
