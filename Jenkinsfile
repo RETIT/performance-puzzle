@@ -11,10 +11,10 @@ pipeline {
     		steps {
     			script {
     				dir("pre-test") {
-    					git credentialsId: '7178dfda-0910-40cf-9c42-e7ad0940d5bc', url: 'https://github.com/markusdlugi/test.git', branch: 'pre-test'
+    					git credentialsId: 'github', url: 'https://github.com/markusdlugi/test.git', branch: 'pre-test'
     				}
 					dir("test") {
-    					git credentialsId: '7178dfda-0910-40cf-9c42-e7ad0940d5bc', url: 'https://github.com/markusdlugi/test.git', branch: 'test'
+    					git credentialsId: 'github', url: 'https://github.com/markusdlugi/test.git', branch: 'test'
     				}
     			}
     		}
