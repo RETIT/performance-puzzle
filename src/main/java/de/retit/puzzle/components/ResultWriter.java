@@ -31,7 +31,7 @@ public class ResultWriter {
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				Measurement measurement = entry.getValue().get(i);
 				if(measurement == null) {
-					continue;
+					measurement = new Measurement("0", "0");
 				}
 				content.append(measurement.getTime());
 				content.append(',');

@@ -43,11 +43,13 @@ public class ResultAggregator extends Thread {
             Measurement measurement = new Measurement(timestamp, time);
 
             List<Measurement> measurementList = new ArrayList<>(1000);
-            if (result.containsKey(transaction)) {
-                measurementList = result.get(transaction);
+            synchronized (result) {
+                if (result.containsKey(transaction)) {
+                    measurementList = result.get(transaction);
+                }
+                measurementList.add(measurement);
+                result.put(transaction, measurementList);
             }
-            measurementList.add(measurement);
-            result.put(transaction, measurementList);
         }
     }
 }
