@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ResultAggregator extends Thread {
-	public static final Pattern PATTERN = Pattern.compile("([0-9]*),([0-9]*),([a-zA-Z]*)");
+	public static final Pattern PATTERN = Pattern.compile("(([0-9]*),([0-9]*)),([a-zA-Z]*)");
 
 	private List<String> csv;
 	private static final Map<String, List<Measurement>> result = Collections.synchronizedMap(new HashMap<>());
