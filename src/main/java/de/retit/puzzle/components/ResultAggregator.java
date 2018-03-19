@@ -21,27 +21,25 @@ public class ResultAggregator extends Thread {
 	}
 
 	public void run() {
-		synchronized (result) {
-			for (String line : csv) {
-				Matcher matcher = PATTERN.matcher(line);
-				if (matcher.matches()) {
-					// Match line to pattern to get required fields
-					String timestamp = matcher.group(1);
-					String time = matcher.group(2);
-					String transaction = matcher.group(3);
+		for (String line : csv) {
+			Matcher matcher = PATTERN.matcher(line);
+			if (matcher.matches()) {
+				// Match line to pattern to get required fields
+				String timestamp = matcher.group(1);
+				String time = matcher.group(2);
+				String transaction = matcher.group(3);
 
-					// Build Measurement
-					Measurement measurement = new Measurement(timestamp, time);
+				// Build Measurement
+				Measurement measurement = new Measurement(timestamp, time);
 
-					// Add to map
-					synchronized (result) {
-						List<Measurement> measurementList = new ArrayList<>(1);
-						if (result.containsKey(transaction)) {
-							measurementList = result.get(transaction);
-						}
-						measurementList.add(measurement);
-						result.put(transaction, measurementList);
+				// Add to map
+				synchronized (result) {
+					List<Measurement> measurementList = new ArrayList<>(1);
+					if (result.containsKey(transaction)) {
+						measurementList = result.get(transaction);
 					}
+					measurementList.add(measurement);
+					result.put(transaction, measurementList);
 				}
 			}
 		}
