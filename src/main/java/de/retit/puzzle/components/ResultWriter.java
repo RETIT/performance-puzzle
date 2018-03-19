@@ -26,19 +26,21 @@ public class ResultWriter {
 	}
 
 	public void write() {
+
+		Path outputDirectoryPath = new File(outputDirectory).toPath();
 		for (Entry<String, List<Measurement>> entry : transactionMap.entrySet()) {
-			String content = "";
+			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				Measurement measurement = entry.getValue().get(i);
-				content += measurement.getTime().getTime();
-				content += ",";
-				content += measurement.getValue().longValue();
+				stringBuilder.append(measurement.getTime().getTime())
+						.append(",")
+						.append(measurement.getValue().longValue());
 				if (i < entry.getValue().size() - 1) {
-					content += "\n";
+					stringBuilder.append("\n");
 				}
 			}
-			Path outputDirectoryPath = new File(outputDirectory).toPath();
 			Path outputFile = outputDirectoryPath.resolve(entry.getKey() + ".csv");
+			String content = stringBuilder.toString();
 			try {
 				Files.write(outputFile, content.getBytes(), StandardOpenOption.CREATE,
 						StandardOpenOption.TRUNCATE_EXISTING);
