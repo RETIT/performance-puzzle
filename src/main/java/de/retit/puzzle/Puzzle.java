@@ -62,7 +62,6 @@ public class Puzzle {
 					int comma1 = line.indexOf(',');
 					int comma2 = line.indexOf(',', comma1 + 1);
 					if (comma1 > 0 && comma2 > 0) {
-						String nums = line.substring(0, comma2);
 						String file = line.substring(comma2 + 1);
 						BufferedWriter writer = outputs.computeIfAbsent(file, s -> {
 							try {
@@ -74,7 +73,7 @@ public class Puzzle {
 						//noinspection SynchronizationOnLocalVariableOrMethodParameter
 						synchronized (writer) {
 							try {
-								writer.write(nums);
+								writer.write(line, 0, comma2);
 								writer.write('\n');
 							} catch (IOException e) {
 								e.printStackTrace();
