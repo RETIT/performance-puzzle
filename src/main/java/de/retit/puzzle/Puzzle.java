@@ -34,7 +34,7 @@ public class Puzzle {
 		List<String> csv = new CsvReader(inputFile).read();
 		printTimeForTask("CsvReader");
 
-		ResultAggregator aggregator = new ResultAggregator(csv);
+		ResultAggregator aggregator = new ResultAggregator();
 		csv.parallelStream().forEach(aggregator::parse);
 
 		new ResultWriter(outputDirectory, aggregator.getResult()).write();
