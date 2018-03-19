@@ -1,22 +1,16 @@
 package de.retit.puzzle.components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import de.retit.puzzle.entity.Measurement;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.retit.puzzle.entity.Measurement;
-
 public class ResultAggregator extends Thread {
-
-	private static final String LINE_REGEX = "([0-9]*),([0-9]*),([a-zA-Z]*)";
+	public static final Pattern PATTERN = Pattern.compile("([0-9]*),([0-9]*),([a-zA-Z]*)");
 
 	private List<String> csv;
-	private static Map<String, List<Measurement>> result = Collections.synchronizedMap(new HashMap<>());
+	private static final Map<String, List<Measurement>> result = Collections.synchronizedMap(new HashMap<>());
 
 	public ResultAggregator(List<String> csv) {
 		this.csv = csv;
@@ -29,18 +23,15 @@ public class ResultAggregator extends Thread {
 	public void run() {
 		synchronized (result) {
 			for (String line : csv) {
-				if (line.matches(LINE_REGEX)) {
+				Matcher matcher = PATTERN.matcher(line);
+				if (matcher.matches()) {
 					// Match line to pattern to get required fields
-					Matcher matcher = Pattern.compile(LINE_REGEX).matcher(line);
-					matcher.matches();
 					String timestamp = matcher.group(1);
 					String time = matcher.group(2);
 					String transaction = matcher.group(3);
 
 					// Build Measurement
-					Date date = new Date(Long.parseLong(timestamp));
-					Double timeDouble = Double.valueOf(time);
-					Measurement measurement = new Measurement(date, timeDouble);
+					Measurement measurement = new Measurement(timestamp, time);
 
 					// Add to map
 					synchronized (result) {

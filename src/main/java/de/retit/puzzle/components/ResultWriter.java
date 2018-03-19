@@ -26,9 +26,9 @@ public class ResultWriter {
 			try (Writer writer = new BufferedWriter(new FileWriter(new File(outputDirectory, entry.getKey() + ".csv")))) {
 				for (int i = 0; i < entry.getValue().size(); i++) {
 					Measurement measurement = entry.getValue().get(i);
-					writer.write(String.valueOf(measurement.getTime().getTime()));
+					writer.write(measurement.getTime());
 					writer.write(",");
-					writer.write(String.valueOf(measurement.getValue().longValue()));
+					writer.write(measurement.getValue());
 					if (i < entry.getValue().size() - 1) {
 						writer.write('\n');
 					}
