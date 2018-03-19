@@ -1,5 +1,6 @@
 package de.retit.puzzle.components;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,19 +25,14 @@ public class CsvReader {
 			throw new IllegalStateException("File does not exist!");
 		}
 		List<String> lines = new ArrayList<>();
-		try (FileReader fileReader = new FileReader(file)) {
-			String line = "";
-			int character;
-			while ((character = fileReader.read()) > 0) {
-				if ((character == '\r' || character == '\n')) {
-					if (!line.equals("")) {
-						lines.add(line);
-						line = "";
-					}
-				} else {
-					line += (char) character;
-				}
+		try {
+			FileReader fileReader = new FileReader(file);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+			while (bufferedReader.ready()) {
+				lines.add(bufferedReader.readLine());
 			}
+			bufferedReader.close();
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error reading input file file", e);
 		}
