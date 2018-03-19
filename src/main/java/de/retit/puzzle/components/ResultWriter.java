@@ -27,20 +27,23 @@ public class ResultWriter {
 
 	public void write() {
 		for (Entry<String, List<Measurement>> entry : transactionMap.entrySet()) {
-			String content = "";
+			StringBuffer content = new StringBuffer();
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				Measurement measurement = entry.getValue().get(i);
-				content += measurement.getTime().getTime();
-				content += ",";
-				content += measurement.getValue().longValue();
+				if(measurement == null) {
+					continue;
+				}
+				content.append(measurement.getTime());
+				content.append(',');
+				content.append(measurement.getValue());
 				if (i < entry.getValue().size() - 1) {
-					content += "\n";
+					content.append('\n');
 				}
 			}
 			Path outputDirectoryPath = new File(outputDirectory).toPath();
 			Path outputFile = outputDirectoryPath.resolve(entry.getKey() + ".csv");
 			try {
-				Files.write(outputFile, content.getBytes(), StandardOpenOption.CREATE,
+				Files.write(outputFile, content.toString().getBytes(), StandardOpenOption.CREATE,
 						StandardOpenOption.TRUNCATE_EXISTING);
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Error writing CSV file for " + entry.getKey(), e);

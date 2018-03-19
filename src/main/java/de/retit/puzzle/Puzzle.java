@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import de.retit.puzzle.components.CsvReader;
 import de.retit.puzzle.components.ResultAggregator;
@@ -33,24 +34,10 @@ public class Puzzle {
 		List<String> csv = new CsvReader(inputFile).read();
 		printTimeForTask("CsvReader");
 
-		// Set up ResultAggregator workers
-		List<List<String>> csvChunks = MultiThreadingUtil.chunkList(csv, THREAD_COUNT);
-		List<ResultAggregator> aggregators = new ArrayList<>();
-		for (List<String> csvChunk : csvChunks) {
-			ResultAggregator aggregator = new ResultAggregator(csvChunk);
-			aggregators.add(aggregator);
-			aggregator.start();
-		}
-		// Wait for workers to finish
-		Map<String, List<Measurement>> aggregatedResult = new HashMap<>();
-		for (ResultAggregator aggregator : aggregators) {
-			aggregator.join();
-		}
-		aggregatedResult = ResultAggregator.getResult();
-		printTimeForTask("ResultAggregator");
+		ResultAggregator aggregator = new ResultAggregator(csv);
+		csv.parallelStream().forEach(aggregator::parse);
 
-		// Write result to disk
-		new ResultWriter(outputDirectory, aggregatedResult).write();
+		new ResultWriter(outputDirectory, aggregator.getResult()).write();
 		printTimeForTask("ResultWriter");
 	}
 
