@@ -1,8 +1,6 @@
 package de.retit.puzzle.components;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,19 +22,8 @@ public class CsvReader {
 			throw new IllegalStateException("File does not exist!");
 		}
 		List<String> lines = new ArrayList<>();
-		try (FileReader fileReader = new FileReader(file)) {
-			String line = "";
-			int character;
-			while ((character = fileReader.read()) > 0) {
-				if ((character == '\r' || character == '\n')) {
-					if (!line.equals("")) {
-						lines.add(line);
-						line = "";
-					}
-				} else {
-					line += (char) character;
-				}
-			}
+		try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
+			fileReader.lines().filter(s -> !s.isEmpty()).forEach(lines::add);
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error reading input file file", e);
 		}
