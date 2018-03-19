@@ -15,7 +15,7 @@ import org.openjdk.jmh.annotations.Timeout;
 @BenchmarkMode(Mode.SingleShotTime)
 @OutputTimeUnit(TimeUnit.SECONDS)
 @State(Scope.Benchmark)
-@Fork(5)
+@Fork(10)
 public class SimpleBenchmark {
 	
 	@Param("input.jtl")
