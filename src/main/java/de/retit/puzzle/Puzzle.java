@@ -1,15 +1,16 @@
 package de.retit.puzzle;
 
 import de.retit.puzzle.components.CsvReader;
-import de.retit.puzzle.components.ResultAggregator;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
-import java.util.regex.Matcher;
 
 public class Puzzle {
 
@@ -33,10 +34,11 @@ public class Puzzle {
 
 		// Read input CSV data
 		new CsvReader(inputFile).read(line -> futures.add(executor.submit(() -> {
-			Matcher matcher = ResultAggregator.PATTERN.matcher(line);
-			if (matcher.matches()) {
-				String nums = matcher.group(1);
-				String file = matcher.group(4);
+			int comma1 = line.indexOf(',');
+			int comma2 = line.indexOf(',', comma1 + 1);
+			if (comma1 > 0 && comma2 > 0) {
+				String nums = line.substring(0, comma2);
+				String file = line.substring(comma2 + 1);
 				BufferedWriter writer = outputs.computeIfAbsent(file, s -> {
 					try {
 						return new BufferedWriter(new FileWriter(new File(outputDirectory, s + ".csv")));
