@@ -29,28 +29,23 @@ public class ResultAggregator extends Thread {
 	public void run() {
 		synchronized (result) {
 			for (String line : csv) {
-				if (line.matches(LINE_REGEX)) {
-					// Match line to pattern to get required fields
-					Matcher matcher = Pattern.compile(LINE_REGEX).matcher(line);
-					matcher.matches();
-					String timestamp = matcher.group(1);
-					String time = matcher.group(2);
-					String transaction = matcher.group(3);
+				String[] lineStr = line.split(",");
+				String timestamp = lineStr[0];
+				String time = lineStr[1];
+				String transaction = lineStr[2];
+				// Build Measurement
+				Date date = new Date(Long.parseLong(timestamp));
+				Double timeDouble = Double.valueOf(time);
+				Measurement measurement = new Measurement(date, timeDouble);
 
-					// Build Measurement
-					Date date = new Date(Long.parseLong(timestamp));
-					Double timeDouble = Double.valueOf(time);
-					Measurement measurement = new Measurement(date, timeDouble);
-
-					// Add to map
-					synchronized (result) {
-						List<Measurement> measurementList = new ArrayList<>(1);
-						if (result.containsKey(transaction)) {
-							measurementList = result.get(transaction);
-						}
-						measurementList.add(measurement);
-						result.put(transaction, measurementList);
+				// Add to map
+				synchronized (result) {
+					List<Measurement> measurementList = new ArrayList<>(1);
+					if (result.containsKey(transaction)) {
+						measurementList = result.get(transaction);
 					}
+					measurementList.add(measurement);
+					result.put(transaction, measurementList);
 				}
 			}
 		}
