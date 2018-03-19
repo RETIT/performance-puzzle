@@ -5,14 +5,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.retit.puzzle.entity.Measurement;
 
 public class ResultAggregator {
-
-	private static final String LINE_REGEX = "([0-9]*),([0-9]*),([a-zA-Z]*)";
 
 	private List<String> csv;
 	private Map<String, List<Measurement>> result = new HashMap<>();

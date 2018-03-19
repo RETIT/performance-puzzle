@@ -1,24 +1,29 @@
 package de.retit.puzzle;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import de.retit.puzzle.components.CsvReader;
-import de.retit.puzzle.components.ResultAggregator;
-import de.retit.puzzle.components.ResultWriter;
 import de.retit.puzzle.entity.Measurement;
-import de.retit.puzzle.util.MultiThreadingUtil;
 
 public class Puzzle {
-
-	private static final int THREAD_COUNT = 4;
 
 	private static long previousTime;
 
 	private String inputFile;
 	private String outputDirectory;
+
+	private Map<String, List<Measurement>> result = new HashMap<>();
 
 	public Puzzle(String inputFile, String outputDirectory) {
 		this.inputFile = inputFile;
@@ -29,19 +34,52 @@ public class Puzzle {
 		System.out.println();
 		previousTime = System.nanoTime();
 
-		// Read input CSV data
-		List<String> csv = new CsvReader(inputFile).read();
-		printTimeForTask("CsvReader");
+		try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] array = line.split(",");
+				String timestamp = array[0];
+				String time = array[1];
+				String transaction = array[2];
 
-		// Aggregate Result
-		ResultAggregator aggregator = new ResultAggregator(csv);
-		aggregator.aggregate();
-		Map<String, List<Measurement>> aggregatedResult = aggregator.getResult();
-		printTimeForTask("ResultAggregator");
+				// Build Measurement
+				Date date = new Date(Long.parseLong(timestamp));
+				Double timeDouble = Double.valueOf(time);
+				Measurement measurement = new Measurement(date, timeDouble);
 
-		// Write result to disk
-		new ResultWriter(outputDirectory, aggregatedResult).write();
-		printTimeForTask("ResultWriter");
+				// Add to map
+				List<Measurement> measurementList;
+				if (result.containsKey(transaction)) {
+					measurementList = result.get(transaction);
+				} else {
+					measurementList = new ArrayList<>();
+				}
+				measurementList.add(measurement);
+				result.put(transaction, measurementList);
+			}
+
+			for (Entry<String, List<Measurement>> entry : result.entrySet()) {
+				StringBuilder builder = new StringBuilder();
+				for (int i = 0; i < entry.getValue().size(); i++) {
+					Measurement measurement = entry.getValue().get(i);
+					builder.append(measurement.getTime().getTime() + "," + measurement.getValue().longValue());
+					if (i < entry.getValue().size() - 1) {
+						builder.append("\n");
+					}
+				}
+				Path outputDirectoryPath = new File(outputDirectory).toPath();
+				Path outputFile = outputDirectoryPath.resolve(entry.getKey() + ".csv");
+				try {
+					Files.write(outputFile, builder.toString().getBytes(), StandardOpenOption.CREATE,
+							StandardOpenOption.TRUNCATE_EXISTING);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			printTimeForTask("Total");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void printTimeForTask(String task) {
