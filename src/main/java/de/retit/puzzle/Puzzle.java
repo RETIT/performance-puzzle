@@ -26,10 +26,18 @@ public class Puzzle {
 	}
 
 	public void start() {
+		try {
+			doStart();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void doStart() throws Exception {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(THREAD_COUNT, THREAD_COUNT, 1, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
-		
+
 		Map<String, BufferedWriter> outputs = new ConcurrentHashMap<>();
-		
+
 		List<Future<?>> futures = Collections.synchronizedList(new ArrayList<>());
 
 		// Read input CSV data
@@ -59,19 +67,11 @@ public class Puzzle {
 		})));
 
 		for (Future<?> future : futures) {
-			try {
-				future.get();
-			} catch (InterruptedException | ExecutionException e) {
-				throw new RuntimeException(e);
-			}
+			future.get();
 		}
 
 		for (BufferedWriter writer : outputs.values()) {
-			try {
-				writer.close();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			writer.close();
 		}
 	}
 
