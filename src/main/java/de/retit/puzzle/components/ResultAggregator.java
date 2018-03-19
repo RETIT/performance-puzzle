@@ -2,21 +2,16 @@ package de.retit.puzzle.components;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.retit.puzzle.entity.Measurement;
 
 public class ResultAggregator extends Thread {
 
-	private static final String LINE_REGEX = "([0-9]*),([0-9]*),([a-zA-Z]*)";
-
 	private List<String> csv;
-	private static Map<String, List<Measurement>> result = Collections.synchronizedMap(new HashMap<>());
+	private static Map<String, List<Measurement>> result = new HashMap<>();
 
 	public ResultAggregator(List<String> csv) {
 		this.csv = csv;
@@ -27,32 +22,34 @@ public class ResultAggregator extends Thread {
 	}
 
 	public void run() {
-		synchronized (result) {
-			for (String line : csv) {
-				if (line.matches(LINE_REGEX)) {
-					// Match line to pattern to get required fields
-					Matcher matcher = Pattern.compile(LINE_REGEX).matcher(line);
-					matcher.matches();
-					String timestamp = matcher.group(1);
-					String time = matcher.group(2);
-					String transaction = matcher.group(3);
+		for (String line : csv) {
+			int firstComma = line.indexOf(',');
+			int secondComma = line.indexOf(',', firstComma + 1);
 
-					// Build Measurement
-					Date date = new Date(Long.parseLong(timestamp));
-					Double timeDouble = Double.valueOf(time);
-					Measurement measurement = new Measurement(date, timeDouble);
+			String timestamp = line.substring(0, firstComma);
+			String time = line.substring(firstComma + 1, secondComma);
+			String transaction = line.substring(secondComma + 1);
 
-					// Add to map
-					synchronized (result) {
-						List<Measurement> measurementList = new ArrayList<>(1);
-						if (result.containsKey(transaction)) {
-							measurementList = result.get(transaction);
-						}
-						measurementList.add(measurement);
+			// Build Measurement
+			Long date = Long.parseLong(timestamp);
+			Long timeLong = Long.parseLong(time);
+			Measurement measurement = new Measurement(date, timeLong);
+
+			// Add to map
+			List<Measurement> measurementList;
+			if (result.containsKey(transaction)) {
+				measurementList = result.get(transaction);
+			} else {
+				synchronized (result) {
+					if (!result.containsKey(transaction)) {
+						measurementList = Collections.synchronizedList(new ArrayList<>());
 						result.put(transaction, measurementList);
+					} else {
+						measurementList = result.get(transaction);
 					}
 				}
 			}
+			measurementList.add(measurement);
 		}
 	}
 }
