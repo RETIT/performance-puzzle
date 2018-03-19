@@ -1,5 +1,7 @@
 package de.retit.puzzle.components;
 
+import de.retit.puzzle.entity.Measurement;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,8 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import de.retit.puzzle.entity.Measurement;
 
 public class ResultWriter {
 
@@ -27,20 +27,20 @@ public class ResultWriter {
 
 	public void write() {
 		for (Entry<String, List<Measurement>> entry : transactionMap.entrySet()) {
-			String content = "";
+			StringBuilder content = new StringBuilder();
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				Measurement measurement = entry.getValue().get(i);
-				content += measurement.getTime().getTime();
-				content += ",";
-				content += measurement.getValue().longValue();
+				content.append(measurement.getTime().getTime());
+				content.append(",");
+				content.append(measurement.getValue().longValue());
 				if (i < entry.getValue().size() - 1) {
-					content += "\n";
+					content.append("\n");
 				}
 			}
 			Path outputDirectoryPath = new File(outputDirectory).toPath();
 			Path outputFile = outputDirectoryPath.resolve(entry.getKey() + ".csv");
 			try {
-				Files.write(outputFile, content.getBytes(), StandardOpenOption.CREATE,
+				Files.write(outputFile, content.toString().getBytes(), StandardOpenOption.CREATE,
 						StandardOpenOption.TRUNCATE_EXISTING);
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Error writing CSV file for " + entry.getKey(), e);
