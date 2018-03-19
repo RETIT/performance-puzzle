@@ -2,11 +2,7 @@ package de.retit.puzzle.components;
 
 import de.retit.puzzle.entity.Measurement;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,21 +23,16 @@ public class ResultWriter {
 
 	public void write() {
 		for (Entry<String, List<Measurement>> entry : transactionMap.entrySet()) {
-			StringBuilder content = new StringBuilder();
-			for (int i = 0; i < entry.getValue().size(); i++) {
-				Measurement measurement = entry.getValue().get(i);
-				content.append(measurement.getTime().getTime());
-				content.append(",");
-				content.append(measurement.getValue().longValue());
-				if (i < entry.getValue().size() - 1) {
-					content.append("\n");
+			try (Writer writer = new BufferedWriter(new FileWriter(new File(outputDirectory, entry.getKey() + ".csv")))) {
+				for (int i = 0; i < entry.getValue().size(); i++) {
+					Measurement measurement = entry.getValue().get(i);
+					writer.write(String.valueOf(measurement.getTime().getTime()));
+					writer.write(",");
+					writer.write(String.valueOf(measurement.getValue().longValue()));
+					if (i < entry.getValue().size() - 1) {
+						writer.write('\n');
+					}
 				}
-			}
-			Path outputDirectoryPath = new File(outputDirectory).toPath();
-			Path outputFile = outputDirectoryPath.resolve(entry.getKey() + ".csv");
-			try {
-				Files.write(outputFile, content.toString().getBytes(), StandardOpenOption.CREATE,
-						StandardOpenOption.TRUNCATE_EXISTING);
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Error writing CSV file for " + entry.getKey(), e);
 			}
