@@ -30,9 +30,6 @@ public class ResultWriter {
 			StringBuffer content = new StringBuffer();
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				Measurement measurement = entry.getValue().get(i);
-				if(measurement == null) {
-					measurement = new Measurement("0", "0");
-				}
 				content.append(measurement.getTime());
 				content.append(',');
 				content.append(measurement.getValue());

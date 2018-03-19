@@ -33,11 +33,10 @@ public class ResultAggregator extends Thread {
     }
 
     public void parse(String line) {
-        final Matcher matcher = pattern.matcher(line);
-        if (matcher.matches()) {
-            String timestamp = matcher.group(1);
-            String time = matcher.group(2);
-            String transaction = matcher.group(3);
+        final String[] split = line.split(",");
+            String timestamp = split[0];
+            String time = split[1];
+            String transaction = split[2];
 
             // Build Measurement
             Measurement measurement = new Measurement(timestamp, time);
@@ -50,6 +49,5 @@ public class ResultAggregator extends Thread {
                 measurementList.add(measurement);
                 result.put(transaction, measurementList);
             }
-        }
     }
 }
