@@ -36,19 +36,14 @@ public class ResultAggregator extends Thread {
 					String transaction = split[2];
 
 					// Build Measurement
-					Date date = new Date(Long.parseLong(timestamp));
-					Double timeDouble = Double.valueOf(time);
-					Measurement measurement = new Measurement(date, timeDouble);
+					Measurement measurement = new Measurement(timestamp, time);
 
-					// Add to map
-					synchronized (result) {
-						List<Measurement> measurementList = new ArrayList<>(1);
-						if (result.containsKey(transaction)) {
-							measurementList = result.get(transaction);
-						}
-						measurementList.add(measurement);
-						result.put(transaction, measurementList);
+					List<Measurement> measurementList = new ArrayList<>(1);
+					if (result.containsKey(transaction)) {
+						measurementList = result.get(transaction);
 					}
+					measurementList.add(measurement);
+					result.put(transaction, measurementList);
 			}
 		}
 	}

@@ -4,19 +4,19 @@ import java.util.Date;
 
 public class Measurement {
 
-	private final Date time;
-	private final Double value;
+	private final String time;
+	private final String value;
 
-	public Measurement(Date time, Double value) {
+	public Measurement(String time, String value) {
 		this.time = time;
 		this.value = value;
 	}
 
-	public Date getTime() {
+	public String getTime() {
 		return time;
 	}
 
-	public Double getValue() {
+	public String getValue() {
 		return value;
 	}
 }

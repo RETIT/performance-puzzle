@@ -36,9 +36,9 @@ public class ResultWriter {
 				for (int i = 0; i < entry.getValue().size(); i++) {
 					Measurement measurement = entry.getValue().get(i);
 					String content = "";
-					content += measurement.getTime().getTime();
+					content += measurement.getTime();
 					content += ",";
-					content += measurement.getValue().longValue();
+					content += measurement.getValue();
 					if (i < entry.getValue().size() - 1) {
 						content += "\n";
 					}
