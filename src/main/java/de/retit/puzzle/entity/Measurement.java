@@ -1,22 +1,20 @@
 package de.retit.puzzle.entity;
 
-import java.util.Date;
-
 public class Measurement {
 
-	private final Date time;
-	private final Double value;
+	private final long time;
+	private final long value;
 
-	public Measurement(Date time, Double value) {
+	public Measurement(long time, long value) {
 		this.time = time;
 		this.value = value;
 	}
 
-	public Date getTime() {
+	public long getTime() {
 		return time;
 	}
 
-	public Double getValue() {
+	public long getValue() {
 		return value;
 	}
 }

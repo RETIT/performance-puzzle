@@ -28,7 +28,7 @@ public class Puzzle {
 		this.outputDirectory = outputDirectory;
 	}
 
-	public void start() throws InterruptedException {
+	public void start() {
 		try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));) {
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -38,9 +38,7 @@ public class Puzzle {
 				String transaction = array[2];
 
 				// Build Measurement
-				Date date = new Date(Long.parseLong(timestamp));
-				Double timeDouble = Double.valueOf(time);
-				Measurement measurement = new Measurement(date, timeDouble);
+				Measurement measurement = new Measurement(Long.parseLong(timestamp), Long.parseLong(time));
 
 				// Add to map
 				List<Measurement> measurementList;
@@ -57,7 +55,7 @@ public class Puzzle {
 				StringBuilder builder = new StringBuilder();
 				for (int i = 0; i < entry.getValue().size(); i++) {
 					Measurement measurement = entry.getValue().get(i);
-					builder.append(measurement.getTime().getTime() + "," + measurement.getValue().longValue());
+					builder.append(measurement.getTime() + "," + measurement.getValue());
 					if (i < entry.getValue().size() - 1) {
 						builder.append("\n");
 					}
