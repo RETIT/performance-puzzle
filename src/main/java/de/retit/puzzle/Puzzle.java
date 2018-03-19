@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 public class Puzzle {
 
@@ -38,6 +39,13 @@ public class Puzzle {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(THREAD_COUNT, THREAD_COUNT, 1, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
 		Map<String, BufferedWriter> outputs = new ConcurrentHashMap<>();
+		Function<String, BufferedWriter> stringBufferedWriterFunction = s -> {
+			try {
+				return new BufferedWriter(new FileWriter(new File(outputDirectory, s + ".csv")));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		};
 
 		List<Future<?>> futures = Collections.synchronizedList(new ArrayList<>());
 		
@@ -63,13 +71,7 @@ public class Puzzle {
 					int comma2 = line.indexOf(',', comma1 + 1);
 					if (comma1 > 0 && comma2 > 0) {
 						String file = line.substring(comma2 + 1);
-						BufferedWriter writer = outputs.computeIfAbsent(file, s -> {
-							try {
-								return new BufferedWriter(new FileWriter(new File(outputDirectory, s + ".csv")));
-							} catch (IOException e) {
-								throw new RuntimeException(e);
-							}
-						});
+						BufferedWriter writer = outputs.computeIfAbsent(file, stringBufferedWriterFunction);
 						//noinspection SynchronizationOnLocalVariableOrMethodParameter
 						synchronized (writer) {
 							try {
