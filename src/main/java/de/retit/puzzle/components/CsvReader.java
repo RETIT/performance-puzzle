@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.io.BufferedReader;
+
 public class CsvReader {
 
 	private static final Logger LOGGER = Logger.getLogger(CsvReader.class.getName());
@@ -24,18 +26,12 @@ public class CsvReader {
 			throw new IllegalStateException("File does not exist!");
 		}
 		List<String> lines = new ArrayList<>();
+
 		try (FileReader fileReader = new FileReader(file)) {
-			String line = "";
-			int character;
-			while ((character = fileReader.read()) > 0) {
-				if ((character == '\r' || character == '\n')) {
-					if (!line.equals("")) {
-						lines.add(line);
-						line = "";
-					}
-				} else {
-					line += (char) character;
-				}
+			BufferedReader bf = new BufferedReader(fileReader);
+			String l;
+			while((l = bf.readLine()) != null) {
+				lines.add(l);
 			}
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error reading input file file", e);

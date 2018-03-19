@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,42 +17,50 @@ public class ResultAggregator extends Thread {
 	private static final String LINE_REGEX = "([0-9]*),([0-9]*),([a-zA-Z]*)";
 
 	private List<String> csv;
-	private static Map<String, List<Measurement>> result = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, List<Measurement>> result = new HashMap<>();
 
 	public ResultAggregator(List<String> csv) {
 		this.csv = csv;
 	}
 
-	public static Map<String, List<Measurement>> getResult() {
-		return result;
+	public void run() {
+		Pattern p = Pattern.compile(LINE_REGEX);
+
+		for (String line : csv) {
+			String[] parts = line.split(",");
+
+			if(parts.length == 3) {
+				String timestamp = parts[0];
+				String time = parts[1];
+				String transaction = parts[2];
+
+				// Build Measurement
+				Date date = new Date(Long.parseLong(timestamp));
+				Double timeDouble = Double.valueOf(time);
+				Measurement measurement = new Measurement(date, timeDouble);
+
+				// Add to map
+				List<Measurement> measurementList = result.get(transaction);
+				if (measurementList == null) {
+					measurementList = new ArrayList<>(1);
+					result.put(transaction, measurementList);
+				}
+				measurementList.add(measurement);
+			}
+		}
 	}
 
-	public void run() {
-		synchronized (result) {
-			for (String line : csv) {
-				if (line.matches(LINE_REGEX)) {
-					// Match line to pattern to get required fields
-					Matcher matcher = Pattern.compile(LINE_REGEX).matcher(line);
-					matcher.matches();
-					String timestamp = matcher.group(1);
-					String time = matcher.group(2);
-					String transaction = matcher.group(3);
+	public void aggregate(Map<String, List<Measurement>> aggregatedResult) {
+		for (Entry<String, List<Measurement>> entry : this.result.entrySet()) {
+			String transaction = entry.getKey();
+			List<Measurement> measurementList = entry.getValue();
 
-					// Build Measurement
-					Date date = new Date(Long.parseLong(timestamp));
-					Double timeDouble = Double.valueOf(time);
-					Measurement measurement = new Measurement(date, timeDouble);
-
-					// Add to map
-					synchronized (result) {
-						List<Measurement> measurementList = new ArrayList<>(1);
-						if (result.containsKey(transaction)) {
-							measurementList = result.get(transaction);
-						}
-						measurementList.add(measurement);
-						result.put(transaction, measurementList);
-					}
-				}
+			List<Measurement> aggregatedList = aggregatedResult.get(transaction);
+			if (aggregatedList != null) {
+				aggregatedList.addAll(measurementList);
+			}
+			else {
+				aggregatedResult.put(transaction, measurementList);
 			}
 		}
 	}

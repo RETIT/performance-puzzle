@@ -31,7 +31,7 @@ public class Puzzle {
 
 		// Read input CSV data
 		List<String> csv = new CsvReader(inputFile).read();
-		printTimeForTask("CsvReader");
+		//printTimeForTask("CsvReader");
 
 		// Set up ResultAggregator workers
 		List<List<String>> csvChunks = MultiThreadingUtil.chunkList(csv, THREAD_COUNT);
@@ -45,13 +45,13 @@ public class Puzzle {
 		Map<String, List<Measurement>> aggregatedResult = new HashMap<>();
 		for (ResultAggregator aggregator : aggregators) {
 			aggregator.join();
+			aggregator.aggregate(aggregatedResult);
 		}
-		aggregatedResult = ResultAggregator.getResult();
-		printTimeForTask("ResultAggregator");
+		//printTimeForTask("ResultAggregator");
 
 		// Write result to disk
 		new ResultWriter(outputDirectory, aggregatedResult).write();
-		printTimeForTask("ResultWriter");
+		//printTimeForTask("ResultWriter");
 	}
 
 	private static void printTimeForTask(String task) {
