@@ -17,9 +17,7 @@ import java.util.Map.Entry;
 import de.retit.puzzle.entity.Measurement;
 
 public class Puzzle {
-
-	private static long previousTime;
-
+	
 	private String inputFile;
 	private String outputDirectory;
 
@@ -31,9 +29,6 @@ public class Puzzle {
 	}
 
 	public void start() throws InterruptedException {
-		System.out.println();
-		previousTime = System.nanoTime();
-
 		try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));) {
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -76,18 +71,8 @@ public class Puzzle {
 					e.printStackTrace();
 				}
 			}
-			printTimeForTask("Total");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static void printTimeForTask(String task) {
-		long currentTime = System.nanoTime();
-		if (previousTime != 0) {
-			double passedTime = (currentTime - previousTime) / 1000000000.0;
-			System.out.println(task + ": " + passedTime + "s");
-		}
-		previousTime = currentTime;
 	}
 }
