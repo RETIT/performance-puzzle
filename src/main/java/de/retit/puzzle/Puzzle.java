@@ -33,20 +33,10 @@ public class Puzzle {
 		List<String> csv = new CsvReader(inputFile).read();
 		printTimeForTask("CsvReader");
 
-		// Set up ResultAggregator workers
-		List<List<String>> csvChunks = MultiThreadingUtil.chunkList(csv, THREAD_COUNT);
-		List<ResultAggregator> aggregators = new ArrayList<>();
-		for (List<String> csvChunk : csvChunks) {
-			ResultAggregator aggregator = new ResultAggregator(csvChunk);
-			aggregators.add(aggregator);
-			aggregator.start();
-		}
-		// Wait for workers to finish
-		Map<String, List<Measurement>> aggregatedResult = new HashMap<>();
-		for (ResultAggregator aggregator : aggregators) {
-			aggregator.join();
-		}
-		aggregatedResult = ResultAggregator.getResult();
+		// Aggregate Result
+		ResultAggregator aggregator = new ResultAggregator(csv);
+		aggregator.aggregate();
+		Map<String, List<Measurement>> aggregatedResult = aggregator.getResult();
 		printTimeForTask("ResultAggregator");
 
 		// Write result to disk
