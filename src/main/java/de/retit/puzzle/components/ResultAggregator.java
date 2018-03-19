@@ -29,13 +29,11 @@ public class ResultAggregator extends Thread {
 	public void run() {
 		synchronized (result) {
 			for (String line : csv) {
-				if (line.matches(LINE_REGEX)) {
 					// Match line to pattern to get required fields
-					Matcher matcher = Pattern.compile(LINE_REGEX).matcher(line);
-					matcher.matches();
-					String timestamp = matcher.group(1);
-					String time = matcher.group(2);
-					String transaction = matcher.group(3);
+					String[] split = line.split(",");
+					String timestamp = split[0];
+					String time = split[1];
+					String transaction = split[2];
 
 					// Build Measurement
 					Date date = new Date(Long.parseLong(timestamp));
@@ -51,7 +49,6 @@ public class ResultAggregator extends Thread {
 						measurementList.add(measurement);
 						result.put(transaction, measurementList);
 					}
-				}
 			}
 		}
 	}
