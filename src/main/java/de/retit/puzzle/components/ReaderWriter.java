@@ -56,7 +56,7 @@ public class ReaderWriter {
         } else {
             try {
                 final FileWriter fileWriter = new FileWriter(outputDirectoryPath.resolve(transaction + ".csv").toFile(),
-                        true);
+                        false);
                 transactionFiles.put(transaction, fileWriter);
                 fileWriter.append(timestamp + ',' + time + '\n');
             } catch (IOException e) {
